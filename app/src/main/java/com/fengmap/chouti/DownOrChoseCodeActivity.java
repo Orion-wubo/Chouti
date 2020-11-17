@@ -115,16 +115,20 @@ public class DownOrChoseCodeActivity extends AppCompatActivity {
         //这里的点击事件很重要
         adapter.setOnItemClickLitener(new RecentAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position, String path) {
-                openCodeActivity(path);
+            public void onItemClick(View view, int position, FileEntity fileEntity) {
+                openCodeActivity(fileEntity);
             }
         });
         recyclerView.setAdapter(adapter);
     }
 
-    private void openCodeActivity(String path) {
+    private void openCodeActivity(FileEntity fileEntity) {
         Intent intent = new Intent(this, CodeShowActivity.class);
-        intent.putExtra("path", path);
+        intent.putExtra("path", fileEntity.getPath());
+        if (fileEntity.isFile()) {
+            intent.putExtra("fileName", fileEntity.getName());
+        }
+
         startActivity(intent);
     }
 
@@ -175,7 +179,7 @@ public class DownOrChoseCodeActivity extends AppCompatActivity {
                         completedName.delete();
                         // success
                         Message message = handler.obtainMessage(0);
-                        message.obj = projectDir+"/"+name;
+                        message.obj = projectDir + "/" + name;
                         handler.sendMessage(message);
 
                     } catch (Exception e) {
@@ -212,7 +216,7 @@ public class DownOrChoseCodeActivity extends AppCompatActivity {
                     fileEntity.setName(name);
                     fileEntity.setFile(false);
                     fileEntity.save();
-                    openCodeActivity(info);
+                    openCodeActivity(fileEntity);
                     break;
                 case 1:
                     Toast.makeText(DownOrChoseCodeActivity.this, info, Toast.LENGTH_SHORT).show();
@@ -232,14 +236,22 @@ public class DownOrChoseCodeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String path = data.getStringExtra("path");
+            String fileName = data.getStringExtra("fileName");
             FileEntity fileEntity = new FileEntity();
             fileEntity.setPath(path);
-            String[] split = path.split("/");
-            String name = split[split.length - 1];
-            fileEntity.setName(name);
-            fileEntity.setFile(false);
+
+            if (fileName != null) {
+                fileEntity.setFile(true);
+                fileEntity.setName(fileName);
+            } else {
+                String[] split = path.split("/");
+                String name = split[split.length - 1];
+                fileEntity.setName(name);
+                fileEntity.setFile(false);
+            }
             fileEntity.save();
-            openCodeActivity(path);
+
+            openCodeActivity(fileEntity);
         }
     }
 }

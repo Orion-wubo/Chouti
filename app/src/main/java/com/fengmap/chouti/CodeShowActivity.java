@@ -36,7 +36,7 @@ public class CodeShowActivity extends AppCompatActivity {
     private ChoseFilePopWindow popWindow;
     private String curFilePath;
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             popWindow.showAsDropDown(drawer_layout, Gravity.BOTTOM, 0, 0);
@@ -53,7 +53,7 @@ public class CodeShowActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String path = intent.getStringExtra("path");
-        Log.e("path", path);
+        String filePath = intent.getStringExtra("fileName");
 
         if (path.equals("/storage/emulated/0/")) {
             replacePath = "/storage/emulated/0/";
@@ -66,8 +66,12 @@ public class CodeShowActivity extends AppCompatActivity {
         file = new File(path);
 
         initView();
-
-        handler.sendMessageDelayed(handler.obtainMessage(), 600);
+        if (filePath != null) {
+            curFilePath = path;
+            initCode(true);
+        } else {
+            handler.sendMessageDelayed(handler.obtainMessage(), 600);
+        }
     }
 
     private void initView() {

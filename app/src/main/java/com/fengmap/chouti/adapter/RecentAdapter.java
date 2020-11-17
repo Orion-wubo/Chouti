@@ -32,7 +32,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyViewHold
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position, String path);
+        void onItemClick(View view, int position, FileEntity fileEntity);
     }
 
     private OnItemClickListener onItemClickListener;
@@ -79,7 +79,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyViewHold
                 @Override
                 public void onClick(View v) {
                     int position = holder.getLayoutPosition();
-                    onItemClickListener.onItemClick(holder.ll_item, position, fileEntity.getPath());
+                    onItemClickListener.onItemClick(holder.ll_item, position, fileEntity);
                 }
             });
         }

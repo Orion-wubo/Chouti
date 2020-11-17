@@ -43,6 +43,7 @@ public class FileChoseActivity extends AppCompatActivity {
         initData(file);
     }
     private void initData(File file) {
+        this.file = file;
         curPath = file.getPath();
         List<FileEntity> fileData = FileUtil.getFileAndDirData(file);
         list.clear();
@@ -51,6 +52,7 @@ public class FileChoseActivity extends AppCompatActivity {
 
         if (curPath.equals("/storage/emulated/0")) {
             curPath = "/storage/emulated/0/";
+
         }
 
         String[] split = curPath.replace("/storage/emulated/0/", "sd/").split("/");
@@ -76,6 +78,7 @@ public class FileChoseActivity extends AppCompatActivity {
             public void onItemClick(View view, int position, String path) {
                 FileEntity fileEntity = (FileEntity) list.get(position);
                 if (fileEntity.isFile()) {
+                    backActivity(fileEntity);
                 } else {
                     curPath = fileEntity.getPath();
                     initData(new File(curPath));
@@ -112,8 +115,19 @@ public class FileChoseActivity extends AppCompatActivity {
     }
 
     public void confirm(View view) {
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setName(file.getName());
+        fileEntity.setPath(file.getPath());
+        fileEntity.setFile(false);
+        backActivity(fileEntity);
+    }
+
+    private void backActivity(FileEntity fileEntity) {
         Intent intent = new Intent();
-        intent.putExtra("path", curPath);
+        intent.putExtra("path", fileEntity.getPath());
+        if (fileEntity.isFile()) {
+            intent.putExtra("fileName", fileEntity.getName());
+        }
         setResult(RESULT_OK, intent);
         finish();
     }
